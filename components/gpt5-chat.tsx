@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useChat } from '@ai-sdk/react';
+import React, { useState, useMemo } from 'react';
+import { useChat, Chat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Send, Bot, User, Brain, Zap, Settings, Sparkles } from 'lucide-react';
@@ -18,14 +19,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 
 type ReasoningLevel = 'light' | 'medium' | 'deep';
 
-interface MessageWithReasoning {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  reasoning?: string;
-  model?: string;
-  timestamp?: Date;
-}
+// Helper function to extract text content from message parts
+const getMessageContent = (message: any): string => {
+  if (!message.parts) return '';
+  const textParts = message.parts.filter((part: any) => part.type === 'text');
+  return textParts.map((part: any) => part.text).join('');
+};
 
 export default function GPT5Chat() {
   const [input, setInput] = useState('');
@@ -33,22 +32,32 @@ export default function GPT5Chat() {
   const [reasoningLevel, setReasoningLevel] = useState<ReasoningLevel>('medium');
   const [showReasoning, setShowReasoning] = useState(true);
   
-  const { messages, status, sendMessage } = useChat({
-    api: '/api/chat',
-    body: {
-      useReasoning,
-      reasoningLevel,
-    },
+  const chat = useMemo(() => new Chat({
+    transport: new DefaultChatTransport({ 
+      api: '/api/chat',
+      body: {
+        useReasoning,
+        reasoningLevel,
+      },
+    }),
+  }), [useReasoning, reasoningLevel]);
+  
+  const { messages, sendMessage, status } = useChat({
+    chat,
   });
-
-  const isLoading = status === 'streaming' || status === 'submitted';
-
+  
+  const isLoading = status === 'submitted' || status === 'streaming';
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
     
-    await sendMessage(input);
+    await sendMessage({ text: input });
     setInput('');
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
   };
 
   const getModelBadgeColor = (level: ReasoningLevel) => {
@@ -62,7 +71,7 @@ export default function GPT5Chat() {
   return (
     <div className="flex flex-col h-screen max-w-6xl mx-auto p-4">
       {/* Header with Model Settings */}
-      <div className="mb-4 p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg border border-purple-500/20">
+      <div className="mb-4 p-4 bg-linear-to-r from-purple-500/10 to-blue-500/10 rounded-lg border border-purple-500/20">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-purple-500" />
@@ -133,13 +142,13 @@ export default function GPT5Chat() {
         <div className="space-y-4 p-4">
           {messages.length === 0 && (
             <div className="text-center py-12">
-              <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center mb-4">
+              <div className="mx-auto w-20 h-20 rounded-full bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center mb-4">
                 <Sparkles className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-2xl font-bold mb-2">GPT-5-mini with Reasoning</h3>
               <p className="text-muted-foreground max-w-md mx-auto">
                 Experience the latest August 2025 model with advanced reasoning capabilities. 
-                Enable reasoning mode to see the AI's thought process.
+                Enable reasoning mode to see the AI&apos;s thought process.
               </p>
             </div>
           )}
@@ -192,10 +201,10 @@ export default function GPT5Chat() {
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
                         <div className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
+                          "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
                           isUser 
                             ? "bg-primary-foreground/20" 
-                            : "bg-gradient-to-br from-purple-600 to-blue-600"
+                            : "bg-linear-to-br from-purple-600 to-blue-600"
                         )}>
                           {isUser ? (
                             <User className="w-4 h-4" />
@@ -223,8 +232,9 @@ export default function GPT5Chat() {
                             <ReactMarkdown
                               className="prose prose-sm max-w-none dark:prose-invert"
                               components={{
-                                code: ({ inline, className, children, ...props }) => {
+                                code: ({ className, children, ...props }: any) => {
                                   const match = /language-(\w+)/.exec(className || '');
+                                  const inline = !match;
                                   return !inline && match ? (
                                     <SyntaxHighlighter
                                       style={oneDark}
@@ -243,10 +253,10 @@ export default function GPT5Chat() {
                                 },
                               }}
                             >
-                              {message.content}
+                              {getMessageContent(message)}
                             </ReactMarkdown>
                           ) : (
-                            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                            <p className="text-sm whitespace-pre-wrap">{getMessageContent(message)}</p>
                           )}
                         </div>
                       </div>
@@ -262,7 +272,7 @@ export default function GPT5Chat() {
               <Card className="bg-muted border-border">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center">
                       <Bot className="w-4 h-4 text-white animate-pulse" />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -295,7 +305,7 @@ export default function GPT5Chat() {
       <form onSubmit={handleSubmit} className="flex gap-2">
         <Input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={handleInputChange}
           placeholder={useReasoning ? `Ask GPT-5-mini (${reasoningLevel} reasoning)...` : "Ask GPT-5-mini..."}
           className="flex-1"
           disabled={isLoading}
@@ -303,7 +313,7 @@ export default function GPT5Chat() {
         <Button 
           type="submit" 
           disabled={isLoading || !input.trim()}
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          className="bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
         >
           <Send className="w-4 h-4" />
         </Button>

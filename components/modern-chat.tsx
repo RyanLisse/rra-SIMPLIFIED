@@ -1,6 +1,8 @@
 'use client';
 
-import { useChat } from 'ai/react';
+import { useState, useMemo } from 'react';
+import { useChat, Chat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,10 +12,37 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+// Helper function to extract text content from message parts
+const getMessageContent = (message: any): string => {
+  if (!message.parts) return '';
+  const textParts = message.parts.filter((part: any) => part.type === 'text');
+  return textParts.map((part: any) => part.text).join('');
+};
+
 export default function ModernChat() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: '/api/chat',
+  const [input, setInput] = useState('');
+  
+  const chat = useMemo(() => new Chat({
+    transport: new DefaultChatTransport({ api: '/api/chat' }),
+  }), []);
+  
+  const { messages, sendMessage, status } = useChat({
+    chat,
   });
+  
+  const isLoading = status === 'submitted' || status === 'streaming';
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+    
+    await sendMessage({ text: input });
+    setInput('');
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
 
   return (
     <div className="flex flex-col h-screen max-w-4xl mx-auto p-4">
@@ -44,7 +73,7 @@ export default function ModernChat() {
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         {message.role === 'user' ? (
                           <User className="w-5 h-5 mt-1" />
                         ) : (
@@ -56,8 +85,9 @@ export default function ModernChat() {
                           <ReactMarkdown
                             className="prose prose-sm max-w-none dark:prose-invert"
                             components={{
-                              code: ({ node, inline, className, children, ...props }) => {
+                              code: ({ className, children, ...props }: any) => {
                                 const match = /language-(\w+)/.exec(className || '');
+                                const inline = !match;
                                 return !inline && match ? (
                                   <SyntaxHighlighter
                                     style={oneDark}
@@ -79,10 +109,10 @@ export default function ModernChat() {
                               },
                             }}
                           >
-                            {message.content}
+                            {getMessageContent(message)}
                           </ReactMarkdown>
                         ) : (
-                          <p className="text-sm">{message.content}</p>
+                          <p className="text-sm">{getMessageContent(message)}</p>
                         )}
                       </div>
                     </div>
