@@ -1,5 +1,5 @@
 "use client";
-import GPT5Chat from "@/components/gpt5-chat";
+import GPT5ChatEnhanced from "@/components/gpt5-chat-enhanced";
 import EnhancedChat from "@/components/enhanced-chat";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -91,7 +91,7 @@ export default function Main() {
         </div>
       </header>
       <main className="container mx-auto h-[calc(100vh-3.5rem)]">
-        {chatMode === 'gpt5' ? <GPT5Chat /> : <EnhancedChat />}
+        {chatMode === 'gpt5' ? <GPT5ChatEnhanced /> : <EnhancedChat />}
       </main>
     </div>
   );
