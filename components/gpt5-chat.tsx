@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useChat } from '@ai-sdk/react';
+import React, { useState, useMemo } from 'react';
+import { useChat, Chat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Send, Bot, User, Brain, Zap, Settings, Sparkles } from 'lucide-react';
@@ -18,14 +19,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 
 type ReasoningLevel = 'light' | 'medium' | 'deep';
 
-interface MessageWithReasoning {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  reasoning?: string;
-  model?: string;
-  timestamp?: Date;
-}
+// Helper function to extract text content from message parts
+const getMessageContent = (message: any): string => {
+  if (!message.parts) return '';
+  const textParts = message.parts.filter((part: any) => part.type === 'text');
+  return textParts.map((part: any) => part.text).join('');
+};
 
 export default function GPT5Chat() {
   const [input, setInput] = useState('');
@@ -33,22 +32,32 @@ export default function GPT5Chat() {
   const [reasoningLevel, setReasoningLevel] = useState<ReasoningLevel>('medium');
   const [showReasoning, setShowReasoning] = useState(true);
   
-  const { messages, status, sendMessage } = useChat({
-    api: '/api/chat',
-    body: {
-      useReasoning,
-      reasoningLevel,
-    },
+  const chat = useMemo(() => new Chat({
+    transport: new DefaultChatTransport({ 
+      api: '/api/chat',
+      body: {
+        useReasoning,
+        reasoningLevel,
+      },
+    }),
+  }), [useReasoning, reasoningLevel]);
+  
+  const { messages, sendMessage, status } = useChat({
+    chat,
   });
-
-  const isLoading = status === 'streaming' || status === 'submitted';
-
+  
+  const isLoading = status === 'submitted' || status === 'streaming';
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
     
-    await sendMessage(input);
+    await sendMessage({ text: input });
     setInput('');
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
   };
 
   const getModelBadgeColor = (level: ReasoningLevel) => {
@@ -139,7 +148,7 @@ export default function GPT5Chat() {
               <h3 className="text-2xl font-bold mb-2">GPT-5-mini with Reasoning</h3>
               <p className="text-muted-foreground max-w-md mx-auto">
                 Experience the latest August 2025 model with advanced reasoning capabilities. 
-                Enable reasoning mode to see the AI's thought process.
+                Enable reasoning mode to see the AI&apos;s thought process.
               </p>
             </div>
           )}
@@ -192,7 +201,7 @@ export default function GPT5Chat() {
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
                         <div className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
+                          "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
                           isUser 
                             ? "bg-primary-foreground/20" 
                             : "bg-gradient-to-br from-purple-600 to-blue-600"
@@ -223,8 +232,9 @@ export default function GPT5Chat() {
                             <ReactMarkdown
                               className="prose prose-sm max-w-none dark:prose-invert"
                               components={{
-                                code: ({ inline, className, children, ...props }) => {
+                                code: ({ className, children, ...props }: any) => {
                                   const match = /language-(\w+)/.exec(className || '');
+                                  const inline = !match;
                                   return !inline && match ? (
                                     <SyntaxHighlighter
                                       style={oneDark}
@@ -243,10 +253,10 @@ export default function GPT5Chat() {
                                 },
                               }}
                             >
-                              {message.content}
+                              {getMessageContent(message)}
                             </ReactMarkdown>
                           ) : (
-                            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                            <p className="text-sm whitespace-pre-wrap">{getMessageContent(message)}</p>
                           )}
                         </div>
                       </div>
@@ -295,7 +305,7 @@ export default function GPT5Chat() {
       <form onSubmit={handleSubmit} className="flex gap-2">
         <Textarea
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={handleInputChange}
           placeholder={useReasoning ? `Ask GPT-5-mini (${reasoningLevel} reasoning)... (Shift+Enter for new line)` : "Ask GPT-5-mini... (Shift+Enter for new line)"}
           className="flex-1 min-h-[60px] max-h-[200px] resize-none"
           disabled={isLoading}

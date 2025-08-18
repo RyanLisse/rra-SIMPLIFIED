@@ -1,6 +1,7 @@
 'use client';
 
-import { useChat } from '@ai-sdk/react';
+import { useChat, Chat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Send, User, Bot, Copy, Check } from 'lucide-react';
@@ -8,8 +9,15 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Message, MessageContent } from '@/components/ai-elements/message';
 import { CodeBlock } from '@/components/ai-elements/code-block';
 import ReactMarkdown from 'react-markdown';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
+
+// Helper function to extract text content from message parts
+const getMessageContent = (message: any): string => {
+  if (!message.parts) return '';
+  const textParts = message.parts.filter((part: any) => part.type === 'text');
+  return textParts.map((part: any) => part.text).join('');
+};
 
 const CopyButton = ({ text }: { text: string }) => {
   const [copied, setCopied] = useState(false);
@@ -34,17 +42,22 @@ const CopyButton = ({ text }: { text: string }) => {
 
 export default function EnhancedChat() {
   const [input, setInput] = useState('');
-  const { messages, status, sendMessage } = useChat({
-    api: '/api/chat',
+  
+  const chat = useMemo(() => new Chat({
+    transport: new DefaultChatTransport({ api: '/api/chat' }),
+  }), []);
+  
+  const { messages, sendMessage, status } = useChat({
+    chat,
   });
   
-  const isLoading = status === 'streaming' || status === 'submitted';
+  const isLoading = status === 'submitted' || status === 'streaming';
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
     
-    await sendMessage(input);
+    await sendMessage({ text: input });
     setInput('');
   };
   
@@ -59,7 +72,7 @@ export default function EnhancedChat() {
           <div className="px-4 py-6 space-y-4">
             {messages.length === 0 && (
               <div className="text-center text-muted-foreground py-12">
-                <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-4">
+                <div className="mx-auto w-16 h-16 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-4">
                   <Bot className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Welcome to AI Chat</h3>
@@ -72,12 +85,12 @@ export default function EnhancedChat() {
             
             {messages.map((message) => (
               <Message key={message.id} from={message.role} className="group">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center",
                     message.role === 'user' 
                       ? "bg-primary text-primary-foreground" 
-                      : "bg-gradient-to-br from-blue-500 to-purple-600 text-white"
+                      : "bg-linear-to-br from-blue-500 to-purple-600 text-white"
                   )}>
                     {message.role === 'user' ? (
                       <User className="w-4 h-4" />
@@ -89,15 +102,16 @@ export default function EnhancedChat() {
                 
                 <MessageContent className="relative">
                   <div className="absolute top-2 right-2">
-                    <CopyButton text={message.content} />
+                    <CopyButton text={getMessageContent(message)} />
                   </div>
                   
                   {message.role === 'assistant' ? (
                     <ReactMarkdown
                       className="prose prose-sm max-w-none dark:prose-invert prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm"
                       components={{
-                        code: ({ inline, className, children, ...props }) => {
+                        code: ({ className, children, ...props }: any) => {
                           const match = /language-(\w+)/.exec(className || '');
+                          const inline = !match;
                           
                           if (!inline && match) {
                             return (
@@ -120,10 +134,10 @@ export default function EnhancedChat() {
                         ),
                       }}
                     >
-                      {message.content}
+                      {getMessageContent(message)}
                     </ReactMarkdown>
                   ) : (
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                    <p className="text-sm whitespace-pre-wrap">{getMessageContent(message)}</p>
                   )}
                 </MessageContent>
               </Message>
@@ -131,8 +145,8 @@ export default function EnhancedChat() {
             
             {isLoading && (
               <Message from="assistant">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center">
+                <div className="shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center">
                     <Bot className="w-4 h-4" />
                   </div>
                 </div>

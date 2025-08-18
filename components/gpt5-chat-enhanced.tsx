@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useChat } from '@ai-sdk/react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useChat, Chat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Send, Bot, User, Brain, Zap, Settings, Sparkles, History, FileText, Link2 } from 'lucide-react';
@@ -21,6 +22,13 @@ import ChatHistorySidebar from './chat-history-sidebar';
 import { Textarea } from '@/components/ui/textarea';
 
 type ReasoningLevel = 'light' | 'medium' | 'deep';
+
+// Helper function to extract text content from message parts
+const getMessageContent = (message: any): string => {
+  if (!message.parts) return '';
+  const textParts = message.parts.filter((part: any) => part.type === 'text');
+  return textParts.map((part: any) => part.text).join('');
+};
 
 // Mock sources for demonstration
 const generateMockSources = (query: string): SourceType[] => {
@@ -82,12 +90,14 @@ export default function GPT5ChatEnhanced() {
     setCurrentSession,
   } = useChatHistoryStore();
   
-  const { messages, status, sendMessage, setMessages } = useChat({
-    api: '/api/chat',
-    body: {
-      useReasoning,
-      reasoningLevel,
-    },
+  const chat = useMemo(() => new Chat({
+    transport: new DefaultChatTransport({ 
+      api: '/api/chat',
+      body: {
+        useReasoning,
+        reasoningLevel,
+      },
+    }),
     onFinish: (message) => {
       // Save message to history
       if (currentSessionId) {
@@ -95,7 +105,7 @@ export default function GPT5ChatEnhanced() {
         addMessage(currentSessionId, {
           id: `msg-${Date.now()}`,
           role: 'assistant',
-          content: message.content,
+          content: getMessageContent(message),
           reasoning: useReasoning ? `[${reasoningLevel} reasoning] Analyzing the query step by step...` : undefined,
           sources: sources.length > 0 ? sources : undefined,
           timestamp: new Date(),
@@ -104,9 +114,13 @@ export default function GPT5ChatEnhanced() {
         setCurrentSources(sources);
       }
     },
+  }), [useReasoning, reasoningLevel, currentSessionId, input, addMessage]);
+  
+  const { messages, sendMessage, status, setMessages } = useChat({
+    chat,
   });
-
-  const isLoading = status === 'streaming' || status === 'submitted';
+  
+  const isLoading = status === 'submitted' || status === 'streaming';
 
   useEffect(() => {
     // Create initial session if none exists
@@ -142,7 +156,7 @@ export default function GPT5ChatEnhanced() {
     const sources = generateMockSources(input);
     setCurrentSources(sources);
     
-    await sendMessage(input);
+    await sendMessage({ text: input });
     setInput('');
   };
 
@@ -279,7 +293,7 @@ export default function GPT5ChatEnhanced() {
                 <h3 className="text-2xl font-bold mb-2">GPT-5-mini with Reasoning</h3>
                 <p className="text-muted-foreground max-w-md mx-auto">
                   Experience the latest August 2025 model with advanced reasoning capabilities. 
-                  Enable reasoning mode to see the AI's thought process.
+                  Enable reasoning mode to see the AI&apos;s thought process.
                 </p>
               </div>
             )}
@@ -293,7 +307,7 @@ export default function GPT5ChatEnhanced() {
               return (
                 <div key={message.id}>
                   <Message from={message.role} className="mb-2">
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                       <div className={cn(
                         "w-8 h-8 rounded-full flex items-center justify-center",
                         isUser 
@@ -331,10 +345,10 @@ export default function GPT5ChatEnhanced() {
                       {/* Message Content */}
                       {message.role === 'assistant' ? (
                         <Response>
-                          {message.content}
+                          {getMessageContent(message)}
                         </Response>
                       ) : (
-                        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                        <p className="text-sm whitespace-pre-wrap">{getMessageContent(message)}</p>
                       )}
                       
                       {/* Sources Display */}

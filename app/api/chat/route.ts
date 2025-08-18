@@ -28,9 +28,6 @@ export async function POST(req: Request) {
       ${useReasoning ? 'Please show your reasoning process clearly before providing the final answer.' : ''}
       Current date: August 2025.`,
       temperature: reasoningLevel === 'deep' ? 0.3 : 0.7,
-      maxTokens: reasoningLevel === 'deep' ? 8000 : 4000,
-      // Enable streaming for better UX
-      experimental_toolCallStreaming: true,
     });
 
     return result.toTextStreamResponse();
@@ -45,7 +42,6 @@ export async function POST(req: Request) {
       ${useReasoning ? 'Please show your reasoning process clearly before providing the final answer.' : ''}
       Current date: August 2025.`,
       temperature: reasoningLevel === 'deep' ? 0.3 : 0.7,
-      maxTokens: reasoningLevel === 'deep' ? 4000 : 2000,
     });
 
     return result.toTextStreamResponse();
