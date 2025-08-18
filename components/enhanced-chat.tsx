@@ -2,7 +2,7 @@
 
 import { useChat } from '@ai-sdk/react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Send, User, Bot, Copy, Check } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Message, MessageContent } from '@/components/ai-elements/message';
@@ -48,7 +48,7 @@ export default function EnhancedChat() {
     setInput('');
   };
   
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
   };
 
@@ -155,11 +155,11 @@ export default function EnhancedChat() {
       <div className="border-t bg-background p-4">
         <form onSubmit={handleSubmit} className="flex gap-2 max-w-3xl mx-auto">
           <div className="flex-1 relative">
-            <Input
+            <Textarea
               value={input}
               onChange={handleInputChange}
-              placeholder="Type your message..."
-              className="pr-10 min-h-[40px] resize-none"
+              placeholder="Type your message... (Shift+Enter for new line)"
+              className="pr-10 min-h-[60px] max-h-[200px] resize-none"
               disabled={isLoading}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -172,7 +172,8 @@ export default function EnhancedChat() {
           <Button 
             type="submit" 
             disabled={isLoading || !input.trim()}
-            className="h-10 w-10 p-0"
+            className="h-[60px] w-10 p-0"
+            aria-label="Send message"
           >
             <Send className="w-4 h-4" />
           </Button>

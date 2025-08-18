@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Send, Bot, User, Brain, Zap, Settings, Sparkles } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
@@ -293,17 +293,24 @@ export default function GPT5Chat() {
 
       {/* Input Area */}
       <form onSubmit={handleSubmit} className="flex gap-2">
-        <Input
+        <Textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={useReasoning ? `Ask GPT-5-mini (${reasoningLevel} reasoning)...` : "Ask GPT-5-mini..."}
-          className="flex-1"
+          placeholder={useReasoning ? `Ask GPT-5-mini (${reasoningLevel} reasoning)... (Shift+Enter for new line)` : "Ask GPT-5-mini... (Shift+Enter for new line)"}
+          className="flex-1 min-h-[60px] max-h-[200px] resize-none"
           disabled={isLoading}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit(e);
+            }
+          }}
         />
         <Button 
           type="submit" 
           disabled={isLoading || !input.trim()}
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 h-[60px]"
+          aria-label="Send message"
         >
           <Send className="w-4 h-4" />
         </Button>

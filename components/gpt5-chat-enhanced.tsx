@@ -188,7 +188,12 @@ export default function GPT5ChatEnhanced() {
               <Badge variant="outline">August 2025</Badge>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                aria-label={sidebarOpen ? "Close chat history" : "Open chat history"}
+              >
                 <History className="w-5 h-5" />
               </Button>
               <Settings className="w-5 h-5 text-muted-foreground" />
@@ -323,13 +328,11 @@ export default function GPT5ChatEnhanced() {
                         />
                       )}
                       
-                      {/* Message Content with Citations */}
+                      {/* Message Content */}
                       {message.role === 'assistant' ? (
-                        <Response 
-                          content={message.content}
-                          sources={sources}
-                          showSources={showSources}
-                        />
+                        <Response>
+                          {message.content}
+                        </Response>
                       ) : (
                         <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                       )}
@@ -441,6 +444,7 @@ export default function GPT5ChatEnhanced() {
                 type="submit" 
                 disabled={isLoading || !input.trim()}
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 h-[60px]"
+                aria-label="Send message"
               >
                 <Send className="w-4 h-4" />
               </Button>
