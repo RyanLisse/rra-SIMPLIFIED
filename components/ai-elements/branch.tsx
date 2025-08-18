@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import type { UIMessage } from 'ai';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import type { ComponentProps, HTMLAttributes, ReactElement } from 'react';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useMemo, useState } from 'react';
 
 type BranchContextType = {
   currentBranch: number;
@@ -37,10 +37,15 @@ export const Branch = ({
   defaultBranch = 0,
   onBranchChange,
   className,
+  children,
   ...props
 }: BranchProps) => {
   const [currentBranch, setCurrentBranch] = useState(defaultBranch);
-  const [branches, setBranches] = useState<ReactElement[]>([]);
+  
+  // Derive branches directly from children - no state synchronization needed
+  const branches = useMemo(() => {
+    return Array.isArray(children) ? children : [children];
+  }, [children]);
 
   const handleBranchChange = (newBranch: number) => {
     setCurrentBranch(newBranch);
@@ -65,7 +70,7 @@ export const Branch = ({
     goToPrevious,
     goToNext,
     branches,
-    setBranches,
+    setBranches: () => {}, // No-op since we derive from children
   };
 
   return (
@@ -80,29 +85,25 @@ export const Branch = ({
 
 export type BranchMessagesProps = HTMLAttributes<HTMLDivElement>;
 
-export const BranchMessages = ({ children, ...props }: BranchMessagesProps) => {
-  const { currentBranch, setBranches, branches } = useBranch();
-  const childrenArray = Array.isArray(children) ? children : [children];
+export const BranchMessages = ({ ...props }: BranchMessagesProps) => {
+  const { currentBranch, branches } = useBranch();
 
-  // Use useEffect to update branches when they change
-  useEffect(() => {
-    if (branches.length !== childrenArray.length) {
-      setBranches(childrenArray);
-    }
-  }, [childrenArray, branches, setBranches]);
-
-  return childrenArray.map((branch, index) => (
-    <div
-      className={cn(
-        'grid gap-2 overflow-hidden [&>div]:pb-0',
-        index === currentBranch ? 'block' : 'hidden'
-      )}
-      key={branch.key}
-      {...props}
-    >
-      {branch}
-    </div>
-  ));
+  return (
+    <>
+      {branches.map((branch, index) => (
+        <div
+          className={cn(
+            'grid gap-2 overflow-hidden [&>div]:pb-0',
+            index === currentBranch ? 'block' : 'hidden'
+          )}
+          key={branch.key || index}
+          {...props}
+        >
+          {branch}
+        </div>
+      ))}
+    </>
+  );
 };
 
 export type BranchSelectorProps = HTMLAttributes<HTMLDivElement> & {

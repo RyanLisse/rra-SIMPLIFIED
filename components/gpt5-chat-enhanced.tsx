@@ -4,10 +4,8 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useChat, Chat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Send, Bot, User, Brain, Zap, Settings, Sparkles, History, FileText, Link2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
@@ -15,7 +13,6 @@ import { Badge } from '@/components/ui/badge';
 import { Message, MessageContent } from '@/components/ai-elements/message';
 import { Reasoning } from '@/components/ai-elements/reasoning';
 import { Source } from '@/components/ai-elements/source';
-import { InlineCitation } from '@/components/ai-elements/inline-citation';
 import { Response } from '@/components/ai-elements/response';
 import useChatHistoryStore, { ChatMessage, Source as SourceType } from '@/stores/useChatHistoryStore';
 import ChatHistorySidebar from './chat-history-sidebar';
@@ -82,12 +79,10 @@ export default function GPT5ChatEnhanced() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const {
-    sessions,
     currentSessionId,
     createSession,
     addMessage,
     getCurrentSession,
-    setCurrentSession,
   } = useChatHistoryStore();
   
   const chat = useMemo(() => new Chat({
@@ -122,12 +117,7 @@ export default function GPT5ChatEnhanced() {
   
   const isLoading = status === 'submitted' || status === 'streaming';
 
-  useEffect(() => {
-    // Create initial session if none exists
-    if (!currentSessionId && sessions.length === 0) {
-      createSession('New Chat');
-    }
-  }, [currentSessionId, sessions.length, createSession]);
+  // Session creation is handled lazily in handleSubmit when actually needed
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

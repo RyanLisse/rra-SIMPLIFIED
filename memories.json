@@ -34,7 +34,253 @@
       "lastAccessed": "2025-08-18T06:31:06.536Z",
       "lastVerified": "2025-08-18T06:31:06.536Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1755498741325_1enq5wfxu",
+      "content": "Merge conflicts in GPT-5 chat components:\n\ngpt5-chat.tsx conflicts:\n- onChange: HEAD has anonymous function, origin/main has handleInputChange function\n- placeholder: HEAD has detailed text with shift+enter info, origin/main shorter\n- className: HEAD has proper sizing (min-h-[60px] max-h-[200px] resize-none), origin/main just flex-1\n- button className: HEAD has correct \"bg-gradient-to-r\", origin/main has typo \"bg-linear-to-r\"\n\ngpt5-chat-enhanced.tsx conflicts:\n- Message content: HEAD uses message.content directly, origin/main uses getMessageContent(message) \n- Sources display: HEAD has simpler structure, origin/main has additional sources section\n- Button className: HEAD has correct \"bg-gradient-to-r\", origin/main has typo \"bg-linear-to-r\"\n\nResolution strategy: Choose HEAD versions for better UX (detailed placeholders, proper sizing) and fix CSS typos",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "merge-conflict",
+        "gpt5-chat",
+        "css-fix"
+      ],
+      "timestamp": "2025-08-18T06:32:21.325Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:32:21.325Z",
+      "lastVerified": "2025-08-18T06:32:21.325Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755498858339_mrymobvid",
+      "content": "Successfully resolved merge conflicts in GPT-5 chat components:\n\nResolution decisions:\n- Used handleInputChange function (consistent with change handler pattern)\n- Kept detailed placeholders with \"(Shift+Enter for new line)\" for better UX\n- Maintained proper textarea sizing: min-h-[60px] max-h-[200px] resize-none\n- Fixed all CSS typos: \"bg-linear-to-r\" → \"bg-gradient-to-r\" throughout both files\n- Used getMessageContent(message) helper for consistency\n- Preserved aria-label=\"Send message\" for accessibility\n- Kept sources display functionality from enhanced version\n\nFiles resolved:\n- /components/gpt5-chat.tsx\n- /components/gpt5-chat-enhanced.tsx\n\nMerge completed successfully on branch fix/coderabbit-review-issues",
+      "type": "config",
+      "tags": [
+        "config",
+        "merge-resolution",
+        "success",
+        "gpt5-chat",
+        "css-fixes"
+      ],
+      "timestamp": "2025-08-18T06:34:18.339Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:34:18.339Z",
+      "lastVerified": "2025-08-18T06:34:18.339Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755498909371_j3c54uxaf",
+      "content": "Successfully merged PR #4 after resolving conflicts. Back on main branch, ready to fix linting warnings. I can see from system reminders that there are still some Tailwind CSS v4 syntax issues - some files still have bg-linear-to-r instead of bg-gradient-to-r and my-2! instead of !my-2.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "pr-merged",
+        "tailwind-v4-syntax",
+        "next-task"
+      ],
+      "timestamp": "2025-08-18T06:35:09.371Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:35:09.371Z",
+      "lastVerified": "2025-08-18T06:35:09.371Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755498983473_vm7xivjsn",
+      "content": "Successfully fixed all linting warnings for unused parameters in response.tsx:\n\n1. Prefixed all unused 'node' parameters with underscore (_node) in ReactMarkdown component renderers (lines 177, 182, 187, 192, 195, 200, 210, 218, 226, 231, 236, 244, 249, 259, 264, 269, 274, 282, 287)\n2. Updated ESLint configuration in eslint.config.mjs to ignore variables starting with underscore\n3. Fixed additional unused variables (hasCodeBlockStart, completeCodeBlocks) by prefixing with underscore\n\nAll linting warnings resolved. The ReactMarkdown renderers still function properly as the 'node' parameter is available but intentionally unused.",
+      "type": "config",
+      "tags": [
+        "config",
+        "solution",
+        "linting",
+        "typescript",
+        "react-markdown",
+        "unused-parameters"
+      ],
+      "timestamp": "2025-08-18T06:36:23.473Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:36:23.473Z",
+      "lastVerified": "2025-08-18T06:36:23.473Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755498990614_ckpvsu3zq",
+      "content": "Found 6 linting warnings to fix:\n1. route.ts:34 - 'error' parameter unused in catch block\n2. gpt5-chat-enhanced.tsx:7 - 'Input' import unused\n3. gpt5-chat-enhanced.tsx:10 - 'Card' import unused  \n4. gpt5-chat-enhanced.tsx:10 - 'CardContent' import unused\n5. gpt5-chat-enhanced.tsx:18 - 'InlineCitation' import unused\n6. gpt5-chat-enhanced.tsx:90 - 'setCurrentSession' variable unused\n\nAnalysis:\n- route.ts: error parameter is needed for the catch block logic but not used - should prefix with underscore\n- gpt5-chat-enhanced.tsx: Several unused imports that can be safely removed\n- setCurrentSession: assigned from store but never used in component",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "linting",
+        "cleanup",
+        "analysis"
+      ],
+      "timestamp": "2025-08-18T06:36:30.614Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:36:30.614Z",
+      "lastVerified": "2025-08-18T06:36:30.614Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755498998925_eaaqjb59e",
+      "content": "Fixed linting warnings in React/Next.js project:\n1. Replaced <img> with Next.js <Image> component in image.tsx and message.tsx\n2. Fixed useEffect dependency issue in branch.tsx by wrapping childrenArray in useMemo\n3. Project uses Next.js 15.2.3 so next/image is available\n4. Added proper imports, width/height props, and maintained all functionality",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "react",
+        "nextjs",
+        "performance",
+        "linting",
+        "image-optimization"
+      ],
+      "timestamp": "2025-08-18T06:36:38.925Z",
+      "context": "Linting fixes for Next.js performance optimization",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:36:38.925Z",
+      "lastVerified": "2025-08-18T06:36:38.925Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755499003464_40wwg7c8x",
+      "content": "Found 7 linting warnings for unused variables in AI elements components:\n\n1. image.tsx:11 - uint8Array parameter is destructured but never used (seems to be for future use)\n2. prompt-input.tsx:43,44 - minHeight/maxHeight are destructured but never used in textarea (should be used for styling)\n3. reasoning.tsx:122 - title variable is assigned but never used (defaulted to 'Reasoning')\n4. source.tsx:26 - className parameter is destructured but never used in SourcesTrigger\n5. response.tsx:110,112 - hasCodeBlockStart and completeCodeBlocks are assigned but never used (part of complex parsing logic)\n\nMost of these appear to be legitimate unused variables that can be safely removed or prefixed with underscore.",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "linting",
+        "unused-variables",
+        "ai-elements",
+        "react-components"
+      ],
+      "timestamp": "2025-08-18T06:36:43.464Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:36:43.464Z",
+      "lastVerified": "2025-08-18T06:36:43.464Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755499039410_yejxc8093",
+      "content": "Successfully fixed all 6 requested linting warnings:\n\n✅ Fixed issues:\n1. route.ts:34 - Changed 'error' to '_error' (prefixed with underscore)\n2. gpt5-chat-enhanced.tsx:7 - Removed unused 'Input' import\n3. gpt5-chat-enhanced.tsx:10 - Removed unused 'Card' and 'CardContent' imports  \n4. gpt5-chat-enhanced.tsx:18 - Removed unused 'InlineCitation' import\n5. gpt5-chat-enhanced.tsx:90 - Removed unused 'setCurrentSession' from destructuring\n\nAll requested warnings are now resolved. Other warnings exist in different files but were not part of the original request.",
+      "type": "code",
+      "tags": [
+        "code",
+        "linting",
+        "completed",
+        "success"
+      ],
+      "timestamp": "2025-08-18T06:37:19.410Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:37:19.410Z",
+      "lastVerified": "2025-08-18T06:37:19.410Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755499116896_3uyp487g9",
+      "content": "Successfully fixed all 7 linting warnings in AI elements components by removing unused variables:\n\n1. ✅ image.tsx - Removed unused uint8Array parameter from Image component\n2. ✅ prompt-input.tsx - Removed unused minHeight and maxHeight parameters from PromptInputTextarea\n3. ✅ reasoning.tsx - Removed unused title variable from ReasoningTrigger component  \n4. ✅ source.tsx - Removed unused className parameter from SourcesTrigger\n5. ✅ response.tsx - Removed unused hasCodeBlockStart, completeCodeBlocks, and codeBlockPattern variables from parseIncompleteMarkdown function\n\nAll components maintain their functionality. ESLint now passes with no warnings or errors.",
+      "type": "code",
+      "tags": [
+        "code",
+        "linting-fix",
+        "completed",
+        "ai-elements",
+        "react-components",
+        "cleanup"
+      ],
+      "timestamp": "2025-08-18T06:38:36.896Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:38:36.896Z",
+      "lastVerified": "2025-08-18T06:38:36.896Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755499183406_iizx95f2l",
+      "content": "Found TypeScript errors in response.tsx: Multiple ReactMarkdown component renderers have _node parameter that doesn't exist in their props interface. Need to remove _node from destructuring in lines 179, 184, 189, 192, 197, 207, 215, 223, 228, 233, 241, 246, 256, 261, 266, 271, 279, 284. The code and pre components on lines 295 and 312 correctly use 'node' without underscore.",
+      "type": "general",
+      "tags": [
+        "general",
+        "typescript",
+        "reactmarkdown",
+        "props-interface",
+        "debugging"
+      ],
+      "timestamp": "2025-08-18T06:39:43.406Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:39:43.406Z",
+      "lastVerified": "2025-08-18T06:39:43.406Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755499216756_jf85w6wkz",
+      "content": "Successfully fixed TypeScript errors in response.tsx by removing _node parameters from ReactMarkdown component renderers. Removed _node from 18 component renderers (li, ul, hr, strong, a, h1-h6, table, thead, tbody, tr, th, td, blockquote). The code and pre components correctly use 'node' parameter which is valid. TypeScript check now passes without errors.",
+      "type": "solution",
+      "tags": [
+        "solution",
+        "typescript",
+        "reactmarkdown",
+        "fix-complete",
+        "success"
+      ],
+      "timestamp": "2025-08-18T06:40:16.756Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:40:16.756Z",
+      "lastVerified": "2025-08-18T06:40:16.756Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755499283895_pfgwbcllp",
+      "content": "Starting BDD refactor task: Read React docs on \"You Might Not Need an Effect\", analyze codebase for useEffect usage, create improvement plan and documentation",
+      "type": "general",
+      "tags": [
+        "general",
+        "react",
+        "bdd-refactor",
+        "useEffect",
+        "performance",
+        "react-patterns"
+      ],
+      "timestamp": "2025-08-18T06:41:23.895Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:41:23.895Z",
+      "lastVerified": "2025-08-18T06:41:23.895Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755499533486_1kz8j21zi",
+      "content": "Task: Fix useEffect anti-patterns in React components\nPriority fixes identified:\n1. branch.tsx - state synchronization anti-pattern where useEffect synchronizes branches with childrenArray  \n2. gpt5-chat-enhanced.tsx - session initialization using useEffect instead of lazy initialization\n\nAnti-pattern: Using useEffect to synchronize state that should be derived from props/other state\nBetter pattern: Use useMemo to derive state or lazy initialization for one-time setup",
+      "type": "tip",
+      "tags": [
+        "tip",
+        "react",
+        "useEffect",
+        "anti-pattern",
+        "React",
+        "state-sync",
+        "branch.tsx",
+        "gpt5-chat-enhanced.tsx"
+      ],
+      "timestamp": "2025-08-18T06:45:33.486Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:45:33.486Z",
+      "lastVerified": "2025-08-18T06:45:33.486Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755499677281_otfodeoyv",
+      "content": "Successfully fixed useEffect anti-patterns:\n1. branch.tsx - Removed state synchronization anti-pattern. Changed from using useEffect to sync branches state with childrenArray to directly deriving branches from children using useMemo. Eliminated unnecessary setBranches state updates.\n2. gpt5-chat-enhanced.tsx - Removed session initialization useEffect. Session creation now happens lazily in handleSubmit when actually needed, following React's recommended patterns.\nBoth fixes follow React's \"You Might Not Need an Effect\" guidelines. All linting errors resolved.",
+      "type": "solution",
+      "tags": [
+        "solution",
+        "react",
+        "useEffect",
+        "anti-pattern",
+        "React",
+        "fixed",
+        "completed",
+        "branch.tsx",
+        "gpt5-chat-enhanced.tsx"
+      ],
+      "timestamp": "2025-08-18T06:47:57.281Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:47:57.281Z",
+      "lastVerified": "2025-08-18T06:47:57.281Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-18T06:31:06.536Z"
+  "lastUpdated": "2025-08-18T06:47:57.281Z"
 }

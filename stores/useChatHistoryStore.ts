@@ -35,6 +35,7 @@ interface ChatHistoryStore {
   
   // Session management
   createSession: (title?: string) => ChatSession;
+  ensureSession: () => ChatSession;
   deleteSession: (id: string) => void;
   updateSession: (id: string, updates: Partial<ChatSession>) => void;
   setCurrentSession: (id: string) => void;
@@ -72,6 +73,25 @@ const useChatHistoryStore = create<ChatHistoryStore>()(
         }));
         
         return newSession;
+      },
+      
+      ensureSession: () => {
+        const { sessions, currentSessionId, createSession } = get();
+        
+        // If no sessions exist, create one
+        if (sessions.length === 0) {
+          return createSession('New Chat');
+        }
+        
+        // If no current session is set, set the first one
+        if (!currentSessionId) {
+          set({ currentSessionId: sessions[0].id });
+          return sessions[0];
+        }
+        
+        // Return current session or first available
+        const currentSession = sessions.find(s => s.id === currentSessionId);
+        return currentSession || sessions[0];
       },
       
       deleteSession: (id) => {

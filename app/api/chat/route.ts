@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     });
 
     return result.toTextStreamResponse();
-  } catch (error) {
+  } catch (_error) {
     // Fallback to gpt-4o if the model doesn't exist
     console.log('Falling back to gpt-4o model');
     
