@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useChat, Chat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Send, Bot, User, Brain, Zap, Settings, Sparkles } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card, CardContent } from '@/components/ui/card';
@@ -56,7 +56,7 @@ export default function GPT5Chat() {
     setInput('');
   };
   
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
   };
 
@@ -71,7 +71,7 @@ export default function GPT5Chat() {
   return (
     <div className="flex flex-col h-screen max-w-6xl mx-auto p-4">
       {/* Header with Model Settings */}
-      <div className="mb-4 p-4 bg-linear-to-r from-purple-500/10 to-blue-500/10 rounded-lg border border-purple-500/20">
+      <div className="mb-4 p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg border border-purple-500/20">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-purple-500" />
@@ -142,7 +142,7 @@ export default function GPT5Chat() {
         <div className="space-y-4 p-4">
           {messages.length === 0 && (
             <div className="text-center py-12">
-              <div className="mx-auto w-20 h-20 rounded-full bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center mb-4">
+              <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center mb-4">
                 <Sparkles className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-2xl font-bold mb-2">GPT-5-mini with Reasoning</h3>
@@ -204,7 +204,7 @@ export default function GPT5Chat() {
                           "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
                           isUser 
                             ? "bg-primary-foreground/20" 
-                            : "bg-linear-to-br from-purple-600 to-blue-600"
+                            : "bg-gradient-to-br from-purple-600 to-blue-600"
                         )}>
                           {isUser ? (
                             <User className="w-4 h-4" />
@@ -272,7 +272,7 @@ export default function GPT5Chat() {
               <Card className="bg-muted border-border">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
                       <Bot className="w-4 h-4 text-white animate-pulse" />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -303,17 +303,24 @@ export default function GPT5Chat() {
 
       {/* Input Area */}
       <form onSubmit={handleSubmit} className="flex gap-2">
-        <Input
+        <Textarea
           value={input}
           onChange={handleInputChange}
-          placeholder={useReasoning ? `Ask GPT-5-mini (${reasoningLevel} reasoning)...` : "Ask GPT-5-mini..."}
-          className="flex-1"
+          placeholder={useReasoning ? `Ask GPT-5-mini (${reasoningLevel} reasoning)... (Shift+Enter for new line)` : "Ask GPT-5-mini... (Shift+Enter for new line)"}
+          className="flex-1 min-h-[60px] max-h-[200px] resize-none"
           disabled={isLoading}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit(e);
+            }
+          }}
         />
         <Button 
           type="submit" 
           disabled={isLoading || !input.trim()}
-          className="bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 h-[60px]"
+          aria-label="Send message"
         >
           <Send className="w-4 h-4" />
         </Button>

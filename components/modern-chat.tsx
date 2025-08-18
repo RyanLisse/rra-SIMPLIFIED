@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useChat, Chat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Send, User, Bot } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -142,14 +142,25 @@ export default function ModernChat() {
       </div>
 
       <form onSubmit={handleSubmit} className="flex gap-2">
-        <Input
+        <Textarea
           value={input}
           onChange={handleInputChange}
-          placeholder="Type your message..."
-          className="flex-1"
+          placeholder="Type your message... (Shift+Enter for new line)"
+          className="flex-1 min-h-[60px] max-h-[200px] resize-none"
           disabled={isLoading}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit(e);
+            }
+          }}
         />
-        <Button type="submit" disabled={isLoading || !input.trim()}>
+        <Button 
+          type="submit" 
+          disabled={isLoading || !input.trim()}
+          className="h-[60px]"
+          aria-label="Send message"
+        >
           <Send className="w-4 h-4" />
         </Button>
       </form>

@@ -194,7 +194,7 @@ export default function GPT5ChatEnhanced() {
         sidebarOpen ? 'ml-80' : 'ml-16'
       )}>
         {/* Header with Model Settings */}
-        <div className="p-4 bg-linear-to-r from-purple-500/10 to-blue-500/10 border-b">
+        <div className="p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-b">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Sparkles className="w-6 h-6 text-purple-500" />
@@ -202,7 +202,12 @@ export default function GPT5ChatEnhanced() {
               <Badge variant="outline">August 2025</Badge>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                aria-label={sidebarOpen ? "Close chat history" : "Open chat history"}
+              >
                 <History className="w-5 h-5" />
               </Button>
               <Settings className="w-5 h-5 text-muted-foreground" />
@@ -282,7 +287,7 @@ export default function GPT5ChatEnhanced() {
           <div className="max-w-4xl mx-auto p-4 space-y-4">
             {messages.length === 0 && (
               <div className="text-center py-12">
-                <div className="mx-auto w-20 h-20 rounded-full bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center mb-4">
+                <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center mb-4">
                   <Sparkles className="w-10 h-10 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-2">GPT-5-mini with Reasoning</h3>
@@ -307,7 +312,7 @@ export default function GPT5ChatEnhanced() {
                         "w-8 h-8 rounded-full flex items-center justify-center",
                         isUser 
                           ? "bg-primary text-primary-foreground" 
-                          : "bg-linear-to-br from-purple-600 to-blue-600 text-white"
+                          : "bg-gradient-to-br from-purple-600 to-blue-600 text-white"
                       )}>
                         {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                       </div>
@@ -337,21 +342,11 @@ export default function GPT5ChatEnhanced() {
                         />
                       )}
                       
-                      {/* Message Content with Citations */}
+                      {/* Message Content */}
                       {message.role === 'assistant' ? (
-                        <div>
-                          <Response>
-                            {getMessageContent(message)}
-                          </Response>
-                          {showSources && currentSources.length > 0 && (
-                            <div className="mt-4 space-y-2">
-                              <p className="text-xs text-muted-foreground font-medium">Sources:</p>
-                              {currentSources.map((source) => (
-                                <Source key={source.id} href={source.url} title={source.title} />
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                        <Response>
+                          {getMessageContent(message)}
+                        </Response>
                       ) : (
                         <p className="text-sm whitespace-pre-wrap">{getMessageContent(message)}</p>
                       )}
@@ -383,7 +378,7 @@ export default function GPT5ChatEnhanced() {
                                         <span className="text-xs text-muted-foreground">Relevance:</span>
                                         <div className="w-20 h-2 bg-secondary rounded-full overflow-hidden">
                                           <div 
-                                            className="h-full bg-linear-to-r from-purple-600 to-blue-600"
+                                            className="h-full bg-gradient-to-r from-purple-600 to-blue-600"
                                             style={{ width: `${source.relevance * 100}%` }}
                                           />
                                         </div>
@@ -407,7 +402,7 @@ export default function GPT5ChatEnhanced() {
             
             {isLoading && (
               <Message from="assistant">
-                <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
                   <Bot className="w-4 h-4 text-white animate-pulse" />
                 </div>
                 <MessageContent>
@@ -462,7 +457,8 @@ export default function GPT5ChatEnhanced() {
               <Button 
                 type="submit" 
                 disabled={isLoading || !input.trim()}
-                className="bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 h-[60px]"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 h-[60px]"
+                aria-label="Send message"
               >
                 <Send className="w-4 h-4" />
               </Button>

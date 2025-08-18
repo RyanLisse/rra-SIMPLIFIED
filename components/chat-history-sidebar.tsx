@@ -148,6 +148,7 @@ export default function ChatHistorySidebar({
                   size="icon"
                   onClick={onToggle}
                   className="hover:bg-accent"
+                  aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
                 >
                   <ChevronRight className={cn('w-4 h-4 transition-transform', isOpen && 'rotate-180')} />
                 </Button>
@@ -191,6 +192,7 @@ export default function ChatHistorySidebar({
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-8 h-9"
+                    aria-label="Search chat history"
                   />
                 </div>
               </div>
@@ -235,6 +237,7 @@ export default function ChatHistorySidebar({
                           size="icon"
                           className="opacity-0 group-hover:opacity-100 h-6 w-6"
                           onClick={(e) => handleDeleteSession(e, session.id)}
+                          aria-label={`Delete chat: ${session.title}`}
                         >
                           <Trash2 className="w-3 h-3" />
                         </Button>
