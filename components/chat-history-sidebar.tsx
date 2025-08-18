@@ -168,7 +168,7 @@ export default function ChatHistorySidebar({
                 <Button
                   onClick={handleNewChat}
                   className={cn(
-                    'w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700',
+                    'w-full bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700',
                     !isOpen && 'px-2'
                   )}
                 >
@@ -216,7 +216,7 @@ export default function ChatHistorySidebar({
                             : 'hover:bg-accent/50'
                         )}
                       >
-                        <MessageSquare className="w-4 h-4 flex-shrink-0" />
+                        <MessageSquare className="w-4 h-4 shrink-0" />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1">
                             <p className="text-sm font-medium truncate">
