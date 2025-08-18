@@ -240,7 +240,7 @@ export default function GPT5Chat() {
                                       style={oneDark}
                                       language={match[1]}
                                       PreTag="div"
-                                      className="rounded-md !my-2"
+                                      className="rounded-md my-2!"
                                       {...props as any}
                                     >
                                       {String(children).replace(/\n$/, '')}

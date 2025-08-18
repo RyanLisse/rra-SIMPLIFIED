@@ -1,0 +1,40 @@
+{
+  "memories": [
+    {
+      "id": "mem_1755498573383_mrfxyuip0",
+      "content": "Starting /check task: Check git PRs, resolve conflicts, merge, then check UI with snap-happy screenshots. UI build issue with Tailwind CSS v4 not being picked up. Need to fix ALL issues found.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "check-task",
+        "git-pr",
+        "ui-build",
+        "tailwind-v4"
+      ],
+      "timestamp": "2025-08-18T06:29:33.383Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:29:33.383Z",
+      "lastVerified": "2025-08-18T06:29:33.383Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755498666536_84qzxa385",
+      "content": "Analysis complete: Build succeeds but has 27 linting warnings. Tailwind v4 is properly configured with @import \"tailwindcss\" and @theme block. PostCSS config looks correct. Need to merge PR #4 and fix all linting warnings before testing UI.",
+      "type": "config",
+      "tags": [
+        "config",
+        "testing",
+        "analysis",
+        "tailwind-v4",
+        "linting-warnings",
+        "build-status"
+      ],
+      "timestamp": "2025-08-18T06:31:06.536Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-18T06:31:06.536Z",
+      "lastVerified": "2025-08-18T06:31:06.536Z",
+      "status": "fresh"
+    }
+  ],
+  "lastUpdated": "2025-08-18T06:31:06.536Z"
+}

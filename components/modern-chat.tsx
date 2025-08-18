@@ -93,7 +93,7 @@ export default function ModernChat() {
                                     style={oneDark}
                                     language={match[1]}
                                     PreTag="div"
-                                    className="rounded-md !my-2"
+                                    className="rounded-md my-2!"
                                     {...props}
                                   >
                                     {String(children).replace(/\n$/, '')}
